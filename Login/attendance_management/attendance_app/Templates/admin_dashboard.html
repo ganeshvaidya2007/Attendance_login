@@ -1,0 +1,157 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    .header h1 { margin: 0; font-size: 44px; }
+    .header p { margin: 6px 0 0; color: #64748b; font-size: 30px; }
+    .cards {
+        margin-top: 18px;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(280px, 1fr));
+        gap: 14px;
+    }
+    .card {
+        background: #fff;
+        border: 1px solid #e8edf7;
+        border-radius: 14px;
+        padding: 16px;
+    }
+    .card.blue {
+        background: #2f6fed;
+        color: #fff;
+        border-color: transparent;
+    }
+    .kpi { font-size: 52px; font-weight: 700; margin-top: 8px; }
+    .label { font-size: 32px; color: #64748b; }
+    .card.blue .label { color: #e5edff; }
+    .chip {
+        float: right;
+        background: #e8f8f0;
+        color: #2fb573;
+        border-radius: 999px;
+        padding: 3px 8px;
+        font-size: 24px;
+        font-weight: 600;
+    }
+    .section {
+        margin-top: 14px;
+        background: #fff;
+        border: 1px solid #e8edf7;
+        border-radius: 14px;
+        padding: 16px;
+    }
+    .section h3 { margin: 0 0 12px; font-size: 40px; }
+    .bars {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        align-items: end;
+        min-height: 200px;
+        gap: 12px;
+    }
+    .bar { width: 28px; margin: 0 auto; background: linear-gradient(180deg, #5491ff, #2f6fed); border-radius: 6px 6px 0 0; }
+    .bar-label { text-align: center; margin-top: 8px; color: #64748b; font-size: 24px; }
+    .activity li { list-style: none; padding: 8px 0; border-bottom: 1px solid #eef2f9; font-size: 28px; }
+    .activity li:last-child { border-bottom: 0; }
+    .bottom {
+        margin-top: 14px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+    .donut {
+        width: 160px; height: 160px; border-radius: 50%;
+        background: conic-gradient(#2f6fed 0 32%, #5a8df2 32% 56%, #86adf7 56% 77%, #b5cdfb 77% 100%);
+        position: relative;
+    }
+    .donut::after {
+        content: "";
+        position: absolute;
+        inset: 24px;
+        border-radius: 50%;
+        background: #fff;
+    }
+    .donut-wrap { display: flex; align-items: center; gap: 20px; }
+    .legend li { list-style: none; margin-bottom: 8px; font-size: 24px; }
+    .legend span { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 8px; }
+    .export { text-align: center; min-height: 210px; display: grid; place-items: center; }
+    .export button { border: 0; background: #111827; color: #fff; border-radius: 8px; padding: 10px 14px; cursor: pointer; font-size: 24px; }
+    @media (max-width: 1100px) {
+        .cards, .bottom { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="header">
+    <h1>Dashboard</h1>
+    <p>Welcome back {{ request.user.username }}, here's what's happening today.</p>
+</section>
+
+<section class="cards">
+    <article class="card">
+        <div style="font-size:28px; color:#2f6fed;">Students <span class="chip">+2.5%</span></div>
+        <div class="kpi">{{ total_students }}</div>
+        <div class="label">Total Students</div>
+    </article>
+    <article class="card">
+        <div style="font-size:28px; color:#2f6fed;">Classes</div>
+        <div class="kpi">{{ classes_conducted }}</div>
+        <div class="label">Classes Conducted</div>
+    </article>
+    <article class="card">
+        <div style="font-size:28px; color:#2fb573;">Attendance</div>
+        <div class="kpi">{{ avg_attendance }}%</div>
+        <div class="label">Avg. Attendance</div>
+    </article>
+    <article class="card blue">
+        <div style="font-size:28px;">Today</div>
+        <div class="kpi">{{ classes_today }}</div>
+        <div class="label">Classes Today</div>
+    </article>
+</section>
+
+<section class="section">
+    <h3>Attendance Overview (Monthly)</h3>
+    <div class="bars">
+        {% for item in monthly_attendance %}
+            <div>
+                <div class="bar" style="height: {{ item.value }}%;"></div>
+                <div class="bar-label">{{ item.month }}</div>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="section">
+    <h3>Recent Activity</h3>
+    <ul class="activity" style="margin:0;padding:0;">
+        {% for item in recent_activity %}
+            <li>{{ item.title }} <span style="color:#94a3b8;">{{ item.time }}</span></li>
+        {% endfor %}
+    </ul>
+</section>
+
+<section class="bottom">
+    <article class="section">
+        <h3>Department Distribution</h3>
+        <div class="donut-wrap">
+            <div class="donut"></div>
+            <ul class="legend" style="margin:0;padding:0;">
+                <li><span style="background:#2f6fed;"></span> CS ({{ department_distribution.CS }}%)</li>
+                <li><span style="background:#5a8df2;"></span> IS ({{ department_distribution.IS }}%)</li>
+                <li><span style="background:#86adf7;"></span> EC ({{ department_distribution.EC }}%)</li>
+                <li><span style="background:#b5cdfb;"></span> ME ({{ department_distribution.ME }}%)</li>
+            </ul>
+        </div>
+    </article>
+    <article class="section export">
+        <div>
+            <h3 style="margin-bottom:6px;">Quick Export</h3>
+            <p style="color:#64748b; font-size:26px;">Download this week's summary</p>
+            <button type="button">Download PDF</button>
+        </div>
+    </article>
+</section>
+{% endblock %}

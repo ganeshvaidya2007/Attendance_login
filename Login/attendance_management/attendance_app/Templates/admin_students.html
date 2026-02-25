@@ -1,0 +1,96 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Students{% endblock %}
+
+{% block extra_css %}
+<style>
+    .head { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+    .head h1 { margin:0; font-size:42px; }
+    .head p { margin:6px 0 0; color:#64748b; font-size:26px; }
+    .btn {
+        border:0; background:#2f6fed; color:#fff; border-radius:8px; padding:10px 14px; cursor:pointer; font-size:24px;
+    }
+    .panel { margin-top:14px; }
+    .filters { display:grid; grid-template-columns: 1.5fr 1fr 1fr; gap:10px; margin-bottom:10px; }
+    .filters input, .filters select {
+        width:100%; border:1px solid #dbe3f2; border-radius:8px; padding:10px 12px; font-size:22px;
+    }
+    table { width:100%; border-collapse: collapse; font-size:24px; }
+    th, td { border-bottom:1px solid #edf2fb; padding:10px; text-align:left; }
+    th { color:#64748b; font-weight:600; }
+    .pill { background:#eff4ff; color:#2f6fed; padding:3px 8px; border-radius:999px; font-size:18px; }
+    .add-form { margin-top:12px; display:grid; grid-template-columns: repeat(5, 1fr) auto; gap:8px; }
+    .add-form input, .add-form select { border:1px solid #dbe3f2; border-radius:8px; padding:10px; font-size:20px; }
+    @media (max-width: 1100px) {
+        .filters { grid-template-columns: 1fr; }
+        .add-form { grid-template-columns: 1fr; }
+        table { display:block; overflow:auto; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="head">
+    <div>
+        <h1>Students</h1>
+        <p>Manage student records and information.</p>
+    </div>
+    <button class="btn" type="button" onclick="document.getElementById('add-student').scrollIntoView({behavior:'smooth'});">+ Add Student</button>
+</div>
+
+<section class="panel">
+    <form method="get" class="filters">
+        <input type="text" name="q" placeholder="Search by name or USN..." value="{{ search }}">
+        <select name="branch">
+            {% for item in branch_options %}
+                <option value="{{ item }}" {% if selected_branch == item %}selected{% endif %}>{{ item }} Branches</option>
+            {% endfor %}
+        </select>
+        <select name="sem">
+            {% for item in sem_options %}
+                <option value="{{ item }}" {% if selected_sem == item %}selected{% endif %}>Sem: {{ item }}</option>
+            {% endfor %}
+        </select>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>NAME</th>
+                <th>USN</th>
+                <th>BRANCH</th>
+                <th>SEM</th>
+                <th>SEC</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+                <tr>
+                    <td>{{ student.name }}</td>
+                    <td>{{ student.usn }}</td>
+                    <td><span class="pill">{{ student.branch }}</span></td>
+                    <td>{{ student.sem }}</td>
+                    <td>{{ student.sec }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="5">No students found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <form id="add-student" method="post" class="add-form">
+        {% csrf_token %}
+        <input type="text" name="name" placeholder="Student Name" required>
+        <input type="text" name="usn" placeholder="USN" required>
+        <select name="branch">
+            <option value="CS">CS</option>
+            <option value="IS">IS</option>
+            <option value="EC">EC</option>
+            <option value="ME">ME</option>
+        </select>
+        <input type="number" min="1" max="8" name="sem" placeholder="Sem" required>
+        <input type="text" maxlength="1" name="sec" placeholder="Sec" required>
+        <button class="btn" type="submit">Save</button>
+    </form>
+</section>
+{% endblock %}

@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        :root {
+            --bg: #f4f6fb;
+            --card: #ffffff;
+            --text: #111827;
+            --muted: #6b7280;
+            --line: #e9edf5;
+            --blue: #2f6fed;
+            --blue-soft: #eaf1ff;
+            --green: #2fb573;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 240px;
+            background: #fff;
+            border-right: 1px solid var(--line);
+            padding: 18px 14px;
+            flex-shrink: 0;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px 16px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .brand-badge {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: var(--blue);
+            color: #fff;
+            display: grid;
+            place-items: center;
+            font-weight: 700;
+        }
+
+        .menu {
+            list-style: none;
+            margin: 18px 0 0;
+            padding: 0;
+        }
+
+        .menu li a {
+            display: block;
+            text-decoration: none;
+            color: #374151;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        .menu li a.active {
+            background: var(--blue-soft);
+            color: #1d4ed8;
+            font-weight: 600;
+        }
+
+        .content {
+            flex: 1;
+            padding: 24px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 34px;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            margin: 6px 0 0;
+            color: var(--muted);
+        }
+
+        .cards {
+            margin-top: 22px;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 18px;
+        }
+
+        .card.highlight {
+            background: var(--blue);
+            color: #fff;
+            border-color: transparent;
+        }
+
+        .card .kpi {
+            font-size: 40px;
+            font-weight: 700;
+            margin: 8px 0 0;
+            line-height: 1.1;
+        }
+
+        .card .label {
+            margin-top: 4px;
+            color: var(--muted);
+        }
+
+        .card.highlight .label {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .kpi-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chip {
+            color: var(--green);
+            background: #e9f9f0;
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 18px;
+            margin-top: 16px;
+        }
+
+        .panel h3 {
+            margin: 0 0 14px;
+            font-size: 22px;
+        }
+
+        .bars {
+            height: 250px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 16px;
+            border-top: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+            padding: 20px 16px 18px;
+            background-image: linear-gradient(to top, rgba(47, 111, 237, 0.05) 1px, transparent 1px);
+            background-size: 100% 25px;
+        }
+
+        .bar-item {
+            flex: 1;
+            text-align: center;
+        }
+
+        .bar {
+            margin: 0 auto;
+            width: 26px;
+            max-width: 100%;
+            border-radius: 7px 7px 0 0;
+            background: linear-gradient(180deg, #5491ff, #2f6fed);
+        }
+
+        .bar-label {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 8px;
+        }
+
+        .activity-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .activity-list li {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .activity-list li:last-child {
+            border-bottom: 0;
+        }
+
+        .dot {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--blue-soft);
+            color: var(--blue);
+            display: grid;
+            place-items: center;
+            font-size: 14px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .activity-text {
+            font-size: 18px;
+        }
+
+        .activity-time {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .donut-wrap {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            flex-wrap: wrap;
+        }
+
+        .donut {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: conic-gradient(
+                #2f6fed 0 32%,
+                #5a8df2 32% 56%,
+                #86adf7 56% 77%,
+                #b5cdfb 77% 100%
+            );
+            position: relative;
+        }
+
+        .donut::after {
+            content: "";
+            position: absolute;
+            inset: 28px;
+            border-radius: 50%;
+            background: #fff;
+        }
+
+        .legend {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            font-size: 14px;
+        }
+
+        .legend li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+
+        .legend span {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        .export {
+            display: grid;
+            place-items: center;
+            min-height: 260px;
+            text-align: center;
+            background: linear-gradient(140deg, #ffffff, #f4f8ff);
+        }
+
+        .export button {
+            margin-top: 12px;
+            border: 0;
+            background: #111827;
+            color: #fff;
+            border-radius: 8px;
+            padding: 10px 16px;
+            cursor: pointer;
+        }
+
+        .top-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 8px;
+        }
+
+        .logout {
+            text-decoration: none;
+            color: #374151;
+            font-size: 14px;
+            border: 1px solid var(--line);
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        @media (max-width: 1100px) {
+            .cards,
+            .bottom-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 860px) {
+            .layout {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: 0;
+                border-bottom: 1px solid var(--line);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-badge">A</div>
+            </div>
+
+            <ul class="menu">
+                <li><a href="{% url 'admin_dashboard' %}" class="active">Dashboard</a></li>
+                <li><a href="{% url 'admin_students' %}">Students</a></li>
+                <li><a href="{% url 'admin_attendance' %}">Attendance</a></li>
+                <li><a href="{% url 'admin_reports' %}">Reports</a></li>
+                <li><a href="{% url 'admin_teachers' %}">Teachers</a></li>
+                <li><a href="#">Profile</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <div class="top-actions">
+                <a href="{% url 'admin_logout' %}" class="logout">Logout</a>
+            </div>
+
+            <section class="header">
+                <h1>Dashboard</h1>
+                <p>Welcome back {{ request.user.username }}, here's what's happening today.</p>
+            </section>
+
+            <section class="cards">
+                <article class="card">
+                    <div class="kpi-row">
+                        <div style="color:#2f6fed;">Students</div>
+                        <span class="chip">+2.5%</span>
+                    </div>
+                    <div class="kpi">{{ total_students }}</div>
+                    <div class="label">Total Students</div>
+                </article>
+
+                <article class="card">
+                    <div style="color:#2f6fed;">Classes</div>
+                    <div class="kpi">{{ classes_conducted }}</div>
+                    <div class="label">Classes Conducted</div>
+                </article>
+
+                <article class="card">
+                    <div style="color:#2fb573;">Attendance</div>
+                    <div class="kpi">{{ avg_attendance }}%</div>
+                    <div class="label">Avg. Attendance</div>
+                </article>
+
+                <article class="card highlight">
+                    <div>Today</div>
+                    <div class="kpi">{{ classes_today }}</div>
+                    <div class="label">Classes Today</div>
+                </article>
+            </section>
+
+            <section class="panel">
+                <h3>Attendance Overview (Monthly)</h3>
+                <div class="bars">
+                    {% for item in monthly_attendance %}
+                        <div class="bar-item">
+                            <div class="bar" style="height: {{ item.value|floatformat:0 }}%;"></div>
+                            <div class="bar-label">{{ item.month }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <section class="panel">
+                <h3>Recent Activity</h3>
+                <ul class="activity-list">
+                    {% for item in recent_activity %}
+                        <li>
+                            <div class="dot">&#10003;</div>
+                            <div>
+                                <div class="activity-text">{{ item.title }}</div>
+                                <div class="activity-time">{{ item.time }}</div>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </section>
+
+            <section class="bottom-grid">
+                <article class="panel">
+                    <h3>Department Distribution</h3>
+                    <div class="donut-wrap">
+                        <div class="donut"></div>
+                        <ul class="legend">
+                            <li><span style="background:#2f6fed;"></span> CS ({{ department_distribution.CS }}%)</li>
+                            <li><span style="background:#5a8df2;"></span> IS ({{ department_distribution.IS }}%)</li>
+                            <li><span style="background:#86adf7;"></span> EC ({{ department_distribution.EC }}%)</li>
+                            <li><span style="background:#b5cdfb;"></span> ME ({{ department_distribution.ME }}%)</li>
+                        </ul>
+                    </div>
+                </article>
+
+                <article class="panel export">
+                    <div>
+                        <h3 style="margin-bottom:8px;">Quick Export</h3>
+                        <p style="margin:0; color:#6b7280;">Download this week's summary</p>
+                        <button type="button">Download PDF</button>
+                    </div>
+                </article>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

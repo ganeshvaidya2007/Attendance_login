@@ -1,0 +1,87 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Attendance{% endblock %}
+
+{% block extra_css %}
+<style>
+    .head h1 { margin:0; font-size:42px; }
+    .head p { margin:6px 0 0; color:#64748b; font-size:26px; }
+    .panel { margin-top:14px; }
+    .filters { display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; }
+    .filters input, .filters select {
+        width:100%; border:1px solid #dbe3f2; border-radius:8px; padding:10px 12px; font-size:22px;
+    }
+    .list-head {
+        margin-top:14px; display:flex; justify-content:space-between; align-items:center;
+        font-size:24px; font-weight:600;
+    }
+    .mark-all { color:#2f6fed; cursor:pointer; font-size:20px; text-decoration:none; }
+    .cards { margin-top:10px; display:grid; grid-template-columns: repeat(2, 1fr); gap:10px; }
+    .student {
+        border:1px solid #e8edf7; border-radius:10px; padding:12px;
+        display:flex; justify-content:space-between; align-items:center;
+        background:#fff;
+    }
+    .student .name { font-size:24px; font-weight:600; }
+    .student .usn { font-size:18px; color:#64748b; }
+    .switch { display:flex; align-items:center; gap:8px; font-size:22px; }
+    .footer { margin-top:14px; display:flex; justify-content:flex-end; }
+    .btn {
+        border:0; background:#2f6fed; color:#fff; border-radius:8px; padding:10px 14px; cursor:pointer; font-size:22px;
+    }
+    @media (max-width: 1100px) {
+        .filters, .cards { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="head">
+    <h1>Mark Attendance</h1>
+    <p>Select class details and mark student presence.</p>
+</div>
+
+<form method="post" class="panel">
+    {% csrf_token %}
+    <div class="filters">
+        <input type="date" name="attendance_date" value="{{ selected_date }}">
+        <select name="class_section">
+            {% for item in class_options %}
+                <option value="{{ item }}" {% if selected_class == item %}selected{% endif %}>{{ item }}</option>
+            {% endfor %}
+        </select>
+        <select name="subject">
+            {% for item in subject_options %}
+                <option value="{{ item }}" {% if selected_subject == item %}selected{% endif %}>{{ item }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="list-head">
+        <span>Student List ({{ student_rows|length }})</span>
+        <a href="#" class="mark-all" onclick="event.preventDefault(); document.querySelectorAll('.present-input').forEach(el => el.checked=true);">Mark All Present</a>
+    </div>
+
+    <div class="cards">
+        {% for row in student_rows %}
+            <div class="student">
+                <div>
+                    <div class="name">{{ row.obj.name }}</div>
+                    <div class="usn">{{ row.obj.usn }}</div>
+                </div>
+                <label class="switch">
+                    <input class="present-input" type="checkbox" name="present_students" value="{{ row.obj.id }}" {% if row.present %}checked{% endif %}>
+                    Present
+                </label>
+            </div>
+        {% empty %}
+            <p>No students found for selected class.</p>
+        {% endfor %}
+    </div>
+
+    <div class="footer">
+        <input type="hidden" name="action" value="save">
+        <button class="btn" type="submit">Save Attendance</button>
+    </div>
+</form>
+{% endblock %}

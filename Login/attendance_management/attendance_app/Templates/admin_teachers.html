@@ -1,0 +1,73 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Teachers{% endblock %}
+
+{% block extra_css %}
+<style>
+    .head { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+    .head h1 { margin:0; font-size:42px; }
+    .head p { margin:6px 0 0; color:#64748b; font-size:26px; }
+    .btn {
+        border:0; background:#0f172a; color:#fff; border-radius:8px; padding:10px 14px; cursor:pointer; font-size:22px;
+    }
+    .grid { margin-top:14px; display:grid; grid-template-columns: repeat(2, 1fr); gap:12px; }
+    .card {
+        background:#fff; border:1px solid #e8edf7; border-radius:12px; padding:14px;
+    }
+    .avatar {
+        width:42px; height:42px; border-radius:50%; background:#eaf0ff; color:#2f6fed;
+        display:grid; place-items:center; font-weight:700; font-size:20px;
+    }
+    .top { display:flex; gap:10px; align-items:center; }
+    .name { font-size:26px; font-weight:700; }
+    .email { color:#64748b; font-size:18px; }
+    .subject { margin-top:10px; color:#374151; font-size:22px; }
+    .actions { margin-top:10px; display:flex; gap:8px; }
+    .actions button { flex:1; border:1px solid #e8edf7; border-radius:8px; padding:8px 10px; background:#fff; font-size:18px; }
+    .add-form {
+        margin-top:12px; background:#fff; border:1px solid #e8edf7; border-radius:12px; padding:12px;
+        display:grid; grid-template-columns: 1fr 1fr 1fr auto; gap:8px;
+    }
+    .add-form input { border:1px solid #dbe3f2; border-radius:8px; padding:10px; font-size:20px; }
+    @media (max-width:1100px) {
+        .grid, .add-form { grid-template-columns:1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="head">
+    <div>
+        <h1>Faculty</h1>
+        <p>Manage teachers and subject allocations.</p>
+    </div>
+    <button class="btn" type="button" onclick="document.getElementById('add-teacher').scrollIntoView({behavior:'smooth'});">+ Add Teacher</button>
+</div>
+
+<section class="grid">
+    {% for teacher in teachers %}
+        <article class="card">
+            <div class="top">
+                <div class="avatar">{{ teacher.name|slice:":2"|upper }}</div>
+                <div>
+                    <div class="name">{{ teacher.name }}</div>
+                    <div class="email">{{ teacher.email }}</div>
+                </div>
+            </div>
+            <div class="subject">{{ teacher.subject }}</div>
+            <div class="actions">
+                <button type="button">Edit</button>
+                <button type="button" style="color:#dc2626;">Remove</button>
+            </div>
+        </article>
+    {% endfor %}
+</section>
+
+<form id="add-teacher" method="post" class="add-form">
+    {% csrf_token %}
+    <input type="text" name="name" placeholder="Teacher Name" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <input type="text" name="subject" placeholder="Subject" required>
+    <button class="btn" type="submit">Save</button>
+</form>
+{% endblock %}

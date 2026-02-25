@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Role Login</title>
+    <style>
+        :root {
+            --bg: #f2f4f8;
+            --card: #ffffff;
+            --line: #e4e9f3;
+            --blue: #2f6fed;
+            --text: #111827;
+            --muted: #6b7280;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: var(--bg);
+            display: grid;
+            place-items: center;
+            padding: 1rem;
+        }
+        .card {
+            width: 100%;
+            max-width: 420px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            box-shadow: 0 12px 30px rgba(16, 24, 40, 0.08);
+            padding: 1.6rem;
+        }
+        .shield {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(180deg, #3d7aff, #1f5ae0);
+            color: #fff;
+            font-size: 24px;
+            margin: 0 auto 0.7rem auto;
+        }
+        h1 {
+            margin: 0;
+            text-align: center;
+            color: var(--text);
+            font-size: 2rem;
+        }
+        .sub {
+            text-align: center;
+            color: var(--muted);
+            margin: 0.35rem 0 1.1rem 0;
+            font-size: 1rem;
+        }
+        .field-label {
+            display: block;
+            font-size: 0.8rem;
+            color: #374151;
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .input {
+            width: 100%;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            padding: 0.72rem 0.8rem;
+            margin-bottom: 0.95rem;
+            font-size: 0.95rem;
+            background: #f8faff;
+        }
+        .input:focus {
+            outline: none;
+            border-color: #bfd0ff;
+            box-shadow: 0 0 0 3px rgba(47, 111, 237, 0.15);
+            background: #fff;
+        }
+        .roles {
+            margin-top: 0.25rem;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        .role-btn {
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            background: #fff;
+            padding: 0.68rem 0.5rem;
+            text-align: center;
+            color: #374151;
+            cursor: pointer;
+            font-weight: 600;
+            user-select: none;
+        }
+        .role-btn.active {
+            border-color: #9ab7ff;
+            background: #eef4ff;
+            color: #1d4ed8;
+        }
+        .submit {
+            margin-top: 0.9rem;
+            width: 100%;
+            border: 0;
+            border-radius: 9px;
+            padding: 0.78rem;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(180deg, #3d7aff, #2f6fed);
+            cursor: pointer;
+        }
+        .msg {
+            margin-bottom: 0.8rem;
+            border-radius: 8px;
+            padding: 0.6rem 0.72rem;
+            font-size: 0.88rem;
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+        .foot {
+            text-align: center;
+            color: #9ca3af;
+            margin-top: 0.9rem;
+            font-size: 0.74rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="shield">&#128737;</div>
+        <h1>Welcome Back</h1>
+        <p class="sub">Sign in to manage academic records</p>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="msg">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <label class="field-label" for="username">Email / Username</label>
+            <input class="input" id="username" name="username" type="text" required value="{{ typed_username|default:'' }}" placeholder="admin@college.edu">
+
+            <label class="field-label" for="password">Password</label>
+            <input class="input" id="password" name="password" type="password" required placeholder="********">
+
+            <input type="hidden" id="roleInput" name="role" value="{{ selected_role|default:'student' }}">
+            <div class="roles">
+                <div class="role-btn" data-role="admin">Admin</div>
+                <div class="role-btn" data-role="staff">Staff</div>
+                <div class="role-btn" data-role="student">Student</div>
+            </div>
+
+            <button type="submit" class="submit">Sign In</button>
+        </form>
+
+        <div class="foot">&copy; 2026 Institute of Technology</div>
+    </div>
+
+    <script>
+        const roleInput = document.getElementById("roleInput");
+        const roleButtons = document.querySelectorAll(".role-btn");
+        const activeRole = roleInput.value || "student";
+
+        function setRole(role) {
+            roleInput.value = role;
+            roleButtons.forEach((btn) => {
+                btn.classList.toggle("active", btn.dataset.role === role);
+            });
+        }
+
+        roleButtons.forEach((btn) => {
+            btn.addEventListener("click", () => setRole(btn.dataset.role));
+        });
+
+        setRole(activeRole);
+    </script>
+</body>
+</html>

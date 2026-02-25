@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports</title>
+    <style>
+        body { margin:0; font-family:"Segoe UI",Arial,sans-serif; background:#f4f6fb; }
+        .layout { display:flex; min-height:100vh; }
+        .sidebar { width:240px; background:#fff; border-right:1px solid #e9edf5; padding:18px 14px; }
+        .brand { padding:8px 10px 16px; border-bottom:1px solid #e9edf5; }
+        .badge { width:28px; height:28px; border-radius:8px; background:#2f6fed; color:#fff; display:grid; place-items:center; font-weight:700; }
+        .menu { list-style:none; margin:18px 0 0; padding:0; }
+        .menu a { display:block; text-decoration:none; color:#374151; padding:10px 12px; border-radius:8px; margin-bottom:6px; }
+        .menu a.active { background:#eaf1ff; color:#1d4ed8; font-weight:600; }
+        .content { flex:1; padding:24px; }
+        .kpi { margin-top:14px; display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+        .card { background:#fff; border:1px solid #e9edf5; border-radius:12px; padding:14px; }
+        .panel { margin-top:14px; background:#fff; border:1px solid #e9edf5; border-radius:12px; padding:14px; }
+        table { width:100%; border-collapse:collapse; }
+        th, td { padding:10px; border-bottom:1px solid #eef2f9; text-align:left; font-size:14px; }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar">
+        <div class="brand"><div class="badge">A</div></div>
+        <ul class="menu">
+            <li><a href="{% url 'admin_dashboard' %}">Dashboard</a></li>
+            <li><a href="{% url 'admin_students' %}">Students</a></li>
+            <li><a href="{% url 'admin_attendance' %}">Attendance</a></li>
+            <li><a href="{% url 'admin_reports' %}" class="active">Reports</a></li>
+            <li><a href="{% url 'admin_teachers' %}">Teachers</a></li>
+            <li><a href="#">Profile</a></li>
+        </ul>
+    </aside>
+    <main class="content">
+        <h1 style="margin:0;">Reports</h1>
+        <p style="margin:6px 0 0;color:#6b7280;">Analyze attendance trends and export data.</p>
+        <section class="kpi">
+            <article class="card"><div>Monthly Average</div><h2>{{ monthly_average }}%</h2></article>
+            <article class="card"><div>Critical Attendance</div><h2>{{ critical_attendance }}</h2></article>
+            <article class="card"><div>Best Class</div><h2>{{ best_class }}</h2></article>
+        </section>
+        <section class="panel">
+            <h3>Shortage List (&lt; 75%)</h3>
+            <table>
+                <thead><tr><th>STUDENT</th><th>USN</th><th>ATTENDANCE</th><th>STATUS</th></tr></thead>
+                <tbody>
+                    {% for item in shortage %}
+                        <tr><td>{{ item.name }}</td><td>{{ item.usn }}</td><td>{{ item.attendance }}%</td><td>{{ item.status }}</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+</div>
+</body>
+</html>

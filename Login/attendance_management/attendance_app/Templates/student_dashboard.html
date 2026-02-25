@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <style>
+        body { margin:0; font-family:"Segoe UI",Arial,sans-serif; background:#f3f6fb; }
+        .wrap { max-width: 900px; margin: 28px auto; padding: 0 16px; }
+        .top { display:flex; justify-content:space-between; align-items:center; gap:10px; }
+        h1 { margin:0; font-size:2rem; color:#0f172a; }
+        p { color:#64748b; margin:6px 0 0; }
+        .btn { text-decoration:none; border:1px solid #d7e0f2; background:#fff; color:#1f2937; border-radius:8px; padding:8px 12px; }
+        .grid { margin-top:16px; display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+        .card { background:#fff; border:1px solid #e6edf8; border-radius:12px; padding:16px; }
+        .k { font-size:2rem; font-weight:700; color:#1d4ed8; margin-top:6px; }
+        .notice { margin-top:14px; background:#fff; border:1px solid #e6edf8; border-radius:12px; padding:16px; }
+        .notice li { margin-bottom:8px; color:#374151; }
+        @media (max-width:900px){ .grid{grid-template-columns:1fr;} }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="top">
+            <div>
+                <h1>Student Dashboard</h1>
+                <p>Welcome {{ request.user.username }}. Your overview is here.</p>
+            </div>
+            <a class="btn" href="{% url 'logout' %}">Logout</a>
+        </div>
+
+        <section class="grid">
+            <article class="card">
+                <div>Total Students</div>
+                <div class="k">{{ student_total }}</div>
+            </article>
+            <article class="card">
+                <div>Overall Attendance</div>
+                <div class="k">{{ overall_pct }}%</div>
+            </article>
+        </section>
+
+        <section class="notice">
+            <h3 style="margin-top:0;">Recent Notices</h3>
+            <ul>
+                {% for notice in recent_notices %}
+                    <li>{{ notice }}</li>
+                {% endfor %}
+            </ul>
+        </section>
+    </div>
+</body>
+</html>
